@@ -36,14 +36,14 @@ public class BlogService implements IBlogService {
 
     @Override
     public Blog updateBlog(Long id, Blog blog) {
-        blogRepository.findById(id).orElseThrow( ()-> new ResourceNotFoundException("Blog "+ id +" found"));
+        blogRepository.findById(id).orElseThrow( ()-> new ResourceNotFoundException("Blog Id: "+ id +" not found"));
         return blogRepository.save(blog);
 
     }
 
     @Override
     public void deleteBlog(Long id) {
-        blogRepository.findById(id).orElseThrow( ()-> new ResourceNotFoundException("Blog "+ id +" found"));
+        blogRepository.findById(id).orElseThrow( ()-> new ResourceNotFoundException("Blog Id: "+ id +" not found"));
         blogRepository.deleteById(id);
 
     }

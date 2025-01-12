@@ -1,5 +1,6 @@
 package org.ruhuna.blogapp.controller;
 
+import jakarta.validation.Valid;
 import org.ruhuna.blogapp.model.Blog;
 import org.ruhuna.blogapp.service.IBlogService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class BlogController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Blog> createBlog(@RequestBody Blog blog) {
+    public ResponseEntity<Blog> createBlog(@RequestBody @Valid Blog blog) {
         Blog createdBlog = blogService.createBlog(blog);
         return new ResponseEntity<>(createdBlog, HttpStatus.CREATED);
     }
