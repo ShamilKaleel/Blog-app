@@ -1,9 +1,9 @@
-package org.ruhuna.blogapp.service.impl;
+package org.ruhuna.blogapp.service;
 
 import org.ruhuna.blogapp.exceptions.ResourceNotFoundException;
 import org.ruhuna.blogapp.model.Blog;
 import org.ruhuna.blogapp.repository.BlogRepository;
-import org.ruhuna.blogapp.service.IBlogService;
+import org.ruhuna.blogapp.service.impl.IBlogService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,12 +20,16 @@ public class BlogService implements IBlogService {
 
     @Override
     public List<Blog> getAllBlogs() {
-        return blogRepository.findAll();
+       List<Blog> blogs= blogRepository.findAll();
+       if (blogs.isEmpty()){
+           throw new ResourceNotFoundException("No Blogs Found");
+         }
+        return blogs;
     }
 
     @Override
     public Blog getBlogById(Long id) {
-        return blogRepository.findById(id).orElse(null);
+        return blogRepository.findById(id).orElseThrow( ()-> new ResourceNotFoundException("Blog Id: "+ id +" not found"));
     }
 
     @Override

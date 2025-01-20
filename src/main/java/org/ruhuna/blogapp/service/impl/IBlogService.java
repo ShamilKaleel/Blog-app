@@ -1,4 +1,4 @@
-package org.ruhuna.blogapp.service;
+package org.ruhuna.blogapp.service.impl;
 
 import org.ruhuna.blogapp.model.Blog;
 import java.util.List;
