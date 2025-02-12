@@ -1,6 +1,5 @@
 package org.ruhuna.blogapp.service;
 
-import org.ruhuna.blogapp.model.UserPrinciple;
 import org.ruhuna.blogapp.model.User;
 import org.ruhuna.blogapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
