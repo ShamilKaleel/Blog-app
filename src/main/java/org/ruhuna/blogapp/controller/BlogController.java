@@ -2,7 +2,7 @@ package org.ruhuna.blogapp.controller;
 
 import jakarta.validation.Valid;
 import org.ruhuna.blogapp.model.Blog;
-import org.ruhuna.blogapp.service.IBlogService;
+import org.ruhuna.blogapp.service.impl.IBlogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
