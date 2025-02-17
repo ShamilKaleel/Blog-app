@@ -146,7 +146,7 @@ public class WebSecurityConfig {
             }
 
 
-            userRepository.findByUsername("receptionist1").ifPresent(receptionist -> {
+            userRepository.findByUsername("user").ifPresent(receptionist -> {
                 receptionist.setRoles(userRoles);
                 userRepository.save(receptionist);
             });
