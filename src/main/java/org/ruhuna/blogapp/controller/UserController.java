@@ -146,4 +146,10 @@ public class UserController {
         return ResponseEntity.ok().body(response);
     }
 
+    @GetMapping("/users")
+    public ResponseEntity<?> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return ResponseEntity.ok().body(users);
+    }
+
 }
