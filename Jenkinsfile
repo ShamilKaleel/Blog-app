@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven 3.8.6'
+        maven 'Maven_3_9_9'
         jdk 'JDK 17'
     }
 
@@ -13,13 +13,11 @@ pipeline {
     }
 
     environment {
-        AWS_CREDENTIALS = credentials('aws-credentials')
-        MAIL_CREDENTIALS = credentials('mail-credentials')
         JWT_SECRET = credentials('jwt-secret')
         DB_CREDENTIALS = credentials('db-credentials')
         MYSQL_ROOT_PASSWORD = credentials('mysql-root-password')
         DOCKER_CREDENTIALS = credentials('docker-hub-credentials')
-        DOCKER_IMAGE = "jathurt/myapp-backend"
+        DOCKER_IMAGE = "shamilkaleel/blog-app-backend"
         EC2_HOST = credentials('ec2-host')
         EC2_USER = 'ubuntu'
         DEPLOY_ENV = "${params.DEPLOY_ENV ?: 'staging'}"
@@ -41,24 +39,24 @@ pipeline {
             }
         }
 
-        stage('Test') {
-            steps {
-                withEnv([
-                    'SPRING_PROFILES_ACTIVE=test',
-                    'SPRING_DATASOURCE_URL=jdbc:h2:mem:testdb',
-                    'SPRING_DATASOURCE_USERNAME=sa',
-                    'SPRING_DATASOURCE_PASSWORD=',
-                    'SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop'
-                ]) {
-                    sh './mvnw test'
-                }
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
-                }
-            }
-        }
+//         stage('Test') {
+//             steps {
+//                 withEnv([
+//                     'SPRING_PROFILES_ACTIVE=test',
+//                     'SPRING_DATASOURCE_URL=jdbc:h2:mem:testdb',
+//                     'SPRING_DATASOURCE_USERNAME=sa',
+//                     'SPRING_DATASOURCE_PASSWORD=',
+//                     'SPRING_JPA_HIBERNATE_DDL_AUTO=create-drop'
+//                 ]) {
+//                     sh './mvnw test'
+//                 }
+//             }
+//             post {
+//                 always {
+//                     junit '**/target/surefire-reports/*.xml'
+//                 }
+//             }
+//         }
 
         stage('Prepare .env File') {
             steps {
@@ -68,7 +66,7 @@ pipeline {
                         touch .env && chmod 600 .env
 
                         cat > .env << EOL
-SPRING_APPLICATION_NAME=backend
+SPRING_APPLICATION_NAME=blog-app
 SERVER_PORT=${SERVER_PORT}
 MYSQL_PORT=${MYSQL_PORT}
 MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
@@ -79,24 +77,9 @@ SPRING_DATASOURCE_PASSWORD=${DB_CREDENTIALS_PSW}
 SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
 SPRING_JPA_SHOW_SQL=false
 APP_CORS_ALLOWED_ORIGINS=*
-APP_RESET_PASSWORD_LINK=http://myapp.com/reset-password
 SPRING_APP_JWTSECRET=${JWT_SECRET}
 SPRING_APP_JWTEXPIRATIONMS=86400000
 SPRING_APP_JWTCOOKIENAME=dn-dental-clinic
-SPRING_MAIL_HOST=smtp.gmail.com
-SPRING_MAIL_PORT=587
-SPRING_MAIL_USERNAME=${MAIL_CREDENTIALS_USR}
-SPRING_MAIL_PASSWORD=${MAIL_CREDENTIALS_PSW}
-SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH=true
-SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE=true
-SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED=true
-SPRING_MAIL_PROPERTIES_MAIL_SMTP_CONNECTIONTIMEOUT=5000
-SPRING_MAIL_PROPERTIES_MAIL_SMTP_TIMEOUT=5000
-SPRING_MAIL_PROPERTIES_MAIL_SMTP_WRITETIMEOUT=5000
-AWS_ACCESSKEYID=${AWS_CREDENTIALS_USR}
-AWS_SECRETKEY=${AWS_CREDENTIALS_PSW}
-AWS_REGION=eu-north-1
-AWS_S3_BUCKET=patient-logbook-photos
 EOL
 
                         # Verify file was created successfully

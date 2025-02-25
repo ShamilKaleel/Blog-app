@@ -1,23 +1,18 @@
-# Use Maven image to build the project
-FROM maven:3.8.5-openjdk-17 AS build
-
-WORKDIR /app
-
-# Copy source code
-COPY . .
-
-# Build the application
-
-# Use OpenJDK runtime to run the built JAR
 FROM openjdk:17-jdk-slim
 
+# Install netcat (using the package name 'netcat') and curl for health checks
+RUN apt-get update && apt-get install -y netcat curl && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-# Copy the built JAR from the previous stage
-COPY --from=build /app/target/*.jar app.jar
+# Copy the built JAR from Jenkins
+COPY target/*.jar app.jar
 
-# Expose the application port
-EXPOSE 8080
+# Copy entrypoint script
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
-# Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Environment variables will be provided by docker-compose
+EXPOSE 8081
+
+ENTRYPOINT ["/app/entrypoint.sh"]
