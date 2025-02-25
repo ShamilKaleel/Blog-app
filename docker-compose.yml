@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  mysql-db:
+    image: mysql:latest
+    container_name: mysql-container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3308:3306"
+    networks:
+      - backend-network
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  spring-backend:
+    build: .
+    container_name: spring-container
+    restart: always
+    depends_on:
+      - mysql-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/mydatabase
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_APP_JWTSECRET: mySecretKey123912738aopsgjnspkmndfsopkvajoirjg94gf2opfng2moknmvdsabfvaejliedsdbflv81482
+      SPRING_APP_JWTEXPIRATIONMS: 3000000
+      SPRING_APP_JWTCOOKIENAME: token
+    ports:
+      - "8080:8080"
+    networks:
+      - backend-network
+
+networks:
+  backend-network:
+
+volumes:
+  mysql-data:
