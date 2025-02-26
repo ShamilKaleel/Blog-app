@@ -38,8 +38,8 @@ public class BlogController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Blog> updateBlog(@PathVariable Long id, @RequestBody Blog blog) {
-        Blog updatedBlog = blogService.updateBlog(id, blog);
+    public ResponseEntity<BlogResponseDTO> updateBlog(@PathVariable Long id, @RequestBody @Valid  CreateBlogDTO createBlogDTO) {
+        BlogResponseDTO updatedBlog = blogService.updateBlog(id, createBlogDTO);
         return new ResponseEntity<>(updatedBlog, HttpStatus.OK);
     }
 

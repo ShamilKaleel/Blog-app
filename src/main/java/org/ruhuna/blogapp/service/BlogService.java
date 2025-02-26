@@ -64,9 +64,12 @@ public class BlogService implements IBlogService {
     }
 
     @Override
-    public Blog updateBlog(Long id, Blog blog) {
-        blogRepository.findById(id).orElseThrow( ()-> new ResourceNotFoundException("Blog Id: "+ id +" not found"));
-        return blogRepository.save(blog);
+    public BlogResponseDTO updateBlog(Long id, CreateBlogDTO createBlogDTO) {
+        Blog blog = blogRepository.findById(id).orElseThrow( ()-> new ResourceNotFoundException("Blog Id: "+ id +" not found"));
+        blog.setTitle(createBlogDTO.getTitle());
+        blog.setContent(createBlogDTO.getContent());
+        blogRepository.save(blog);
+        return convertToDTO(blog);
 
     }
 
@@ -86,9 +89,5 @@ public class BlogService implements IBlogService {
     }
 
 
-    public Blog getBlogByIdd(Long id) {
-        return blogRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Blog not found"));
-    }
 
 }

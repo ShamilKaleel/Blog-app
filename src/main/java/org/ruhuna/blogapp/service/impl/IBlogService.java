@@ -10,6 +10,6 @@ public interface IBlogService {
     public List<BlogResponseDTO> getAllBlogs();
     public BlogResponseDTO getBlogById(Long id);
     public BlogResponseDTO createBlog(CreateBlogDTO createBlogDTO);
-    public Blog updateBlog(Long id, Blog blog);
+    public BlogResponseDTO updateBlog(Long id, CreateBlogDTO createBlogDTO);
     public void deleteBlog(Long id);
 }
