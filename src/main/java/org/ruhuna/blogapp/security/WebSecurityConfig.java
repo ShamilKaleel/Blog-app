@@ -10,6 +10,7 @@ import org.ruhuna.blogapp.repository.UserRepository;
 import org.ruhuna.blogapp.security.jwt.JwtFilter;
 import org.ruhuna.blogapp.security.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,12 +29,16 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
+
+    @Value("${app.cors.allowed-origins}")
+    private String allowedOrigins;
 
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
@@ -47,6 +52,7 @@ public class WebSecurityConfig {
     @Autowired
     private CustomAccessDeniedHandler customAccessDeniedHandler;
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -56,6 +62,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/users/login").permitAll()
                         .requestMatchers("/api/users/signup").permitAll()
                         .requestMatchers("/api/users/logout").permitAll()
+                        .requestMatchers("api/test/").permitAll()
                         .requestMatchers(
                                 "/api/v1/auth/**",
                                 "/v2/api-docs",
@@ -83,7 +90,8 @@ public class WebSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        List<String> allowedOriginsList = Arrays.asList(allowedOrigins.split(","));
+        configuration.setAllowedOrigins(allowedOriginsList);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

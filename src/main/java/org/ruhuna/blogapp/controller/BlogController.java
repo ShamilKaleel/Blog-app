@@ -2,6 +2,7 @@ package org.ruhuna.blogapp.controller;
 
 import jakarta.validation.Valid;
 import org.ruhuna.blogapp.model.Blog;
+import org.ruhuna.blogapp.payload.BlogResponseDTO;
 import org.ruhuna.blogapp.service.impl.IBlogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,8 +25,8 @@ public class BlogController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Blog> getBlogById(@PathVariable Long id) {
-        Blog blog = blogService.getBlogById(id);
+    public ResponseEntity<BlogResponseDTO> getBlogById(@PathVariable Long id) {
+        BlogResponseDTO blog = blogService.getBlogById(id);
         return new ResponseEntity<>(blog, HttpStatus.OK);
     }
 
