@@ -3,6 +3,7 @@ package org.ruhuna.blogapp.controller;
 import jakarta.validation.Valid;
 import org.ruhuna.blogapp.model.Blog;
 import org.ruhuna.blogapp.payload.BlogResponseDTO;
+import org.ruhuna.blogapp.payload.CreateBlogDTO;
 import org.ruhuna.blogapp.service.impl.IBlogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,8 +20,8 @@ public class BlogController {
     private IBlogService blogService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<Blog>> getAllBlogs() {
-        List<Blog> blogs = blogService.getAllBlogs();
+    public ResponseEntity<List<BlogResponseDTO>> getAllBlogs() {
+        List<BlogResponseDTO> blogs = blogService.getAllBlogs();
         return new ResponseEntity<>(blogs, HttpStatus.OK);
     }
 
@@ -31,8 +32,8 @@ public class BlogController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Blog> createBlog(@RequestBody @Valid Blog blog) {
-        Blog createdBlog = blogService.createBlog(blog);
+    public ResponseEntity<BlogResponseDTO> createBlog(@RequestBody @Valid CreateBlogDTO createBlogDTO) {
+        BlogResponseDTO createdBlog = blogService.createBlog(createBlogDTO);
         return new ResponseEntity<>(createdBlog, HttpStatus.CREATED);
     }
 

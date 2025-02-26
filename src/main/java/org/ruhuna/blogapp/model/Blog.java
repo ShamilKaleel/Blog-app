@@ -2,13 +2,12 @@ package org.ruhuna.blogapp.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -33,7 +32,7 @@ public class Blog {
     private User user;
 
     @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL)
-    private Set<Comment> comments;
+    private List<Comment> comments;
 }
 
 

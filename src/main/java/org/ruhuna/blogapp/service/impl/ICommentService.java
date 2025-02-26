@@ -7,7 +7,9 @@ import org.ruhuna.blogapp.payload.CommentResponseDTO;
 import java.util.List;
 
 public interface ICommentService {
-    Comment createComment(Comment comment);
+
+    CommentResponseDTO createComment(CreateCommentDTO createCommentDTO);
+
     CommentResponseDTO getCommentById(Long id);
     Comment updateComment(Long id, CreateCommentDTO createCommentDTO);
     void deleteComment(Long id);

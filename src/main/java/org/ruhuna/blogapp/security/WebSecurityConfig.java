@@ -80,7 +80,7 @@ public class WebSecurityConfig {
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        http.exceptionHandling(ehc -> ehc.accessDeniedHandler(customAccessDeniedHandler));
+        //http.exceptionHandling(ehc -> ehc.accessDeniedHandler(customAccessDeniedHandler));
         http.exceptionHandling(ehc -> ehc.authenticationEntryPoint(customBasicAuthenticationEntryPoint));
         http.headers(headers -> headers.frameOptions(
                 frameOptions -> frameOptions.sameOrigin()));

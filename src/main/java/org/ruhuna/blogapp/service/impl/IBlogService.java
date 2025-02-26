@@ -2,13 +2,14 @@ package org.ruhuna.blogapp.service.impl;
 
 import org.ruhuna.blogapp.model.Blog;
 import org.ruhuna.blogapp.payload.BlogResponseDTO;
+import org.ruhuna.blogapp.payload.CreateBlogDTO;
 
 import java.util.List;
 
 public interface IBlogService {
-    public List<Blog> getAllBlogs();
+    public List<BlogResponseDTO> getAllBlogs();
     public BlogResponseDTO getBlogById(Long id);
-    public Blog createBlog(Blog blog);
+    public BlogResponseDTO createBlog(CreateBlogDTO createBlogDTO);
     public Blog updateBlog(Long id, Blog blog);
     public void deleteBlog(Long id);
 }

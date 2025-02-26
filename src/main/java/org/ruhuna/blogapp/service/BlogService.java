@@ -4,14 +4,20 @@ import org.modelmapper.ModelMapper;
 import org.ruhuna.blogapp.exceptions.ResourceNotFoundException;
 import org.ruhuna.blogapp.model.Blog;
 import org.ruhuna.blogapp.model.Comment;
+import org.ruhuna.blogapp.model.User;
 import org.ruhuna.blogapp.payload.BlogResponseDTO;
 import org.ruhuna.blogapp.payload.CommentResponseDTO;
+import org.ruhuna.blogapp.payload.CreateBlogDTO;
 import org.ruhuna.blogapp.repository.BlogRepository;
+import org.ruhuna.blogapp.repository.UserRepository;
+import org.ruhuna.blogapp.security.service.UserDetailsServiceImpl;
 import org.ruhuna.blogapp.service.impl.IBlogService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,14 +29,19 @@ public class BlogService implements IBlogService {
     @Autowired
     private  ModelMapper modelMapper;
 
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
-    public List<Blog> getAllBlogs() {
+    public List<BlogResponseDTO> getAllBlogs() {
        List<Blog> blogs= blogRepository.findAll();
        if (blogs.isEmpty()){
            throw new ResourceNotFoundException("No Blogs Found");
          }
-        return blogs;
+        return blogs.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -41,8 +52,15 @@ public class BlogService implements IBlogService {
     }
 
     @Override
-    public Blog createBlog(Blog blog) {
-        return blogRepository.save(blog);
+    public BlogResponseDTO createBlog(CreateBlogDTO createBlogDTO) {
+        Optional<User> userOpt= userRepository.findById(createBlogDTO.getUserID());
+        User user = userOpt.orElseThrow(() ->
+                new UsernameNotFoundException("User not found" ));
+        Blog blog= modelMapper.map(createBlogDTO, Blog.class);
+        blog.setUser(user);
+        blogRepository.save(blog);
+
+        return convertToDTO(blog);
     }
 
     @Override
@@ -64,20 +82,9 @@ public class BlogService implements IBlogService {
         dto.setAuthorName(blog.getUser().getUsername());
         dto.setAuthorEmail(blog.getUser().getEmail());
 
-        dto.setComments(blog.getComments().stream()
-                .map(BlogService::mapCommentToDTO)
-                .collect(Collectors.toSet()));
-
         return dto;
     }
 
-    private static CommentResponseDTO mapCommentToDTO(Comment comment) {
-        return new CommentResponseDTO(
-                comment.getId(),
-                comment.getContent(),
-                comment.getUser().getUsername()
-        );
-    }
 
     public Blog getBlogByIdd(Long id) {
         return blogRepository.findById(id)
