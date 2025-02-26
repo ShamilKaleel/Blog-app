@@ -10,13 +10,11 @@ import org.ruhuna.blogapp.payload.CommentResponseDTO;
 import org.ruhuna.blogapp.repository.CommentRepository;
 import org.ruhuna.blogapp.repository.BlogRepository; // Assuming you have a Blog repository
 import org.ruhuna.blogapp.repository.UserRepository; // Assuming you have a User repository
-import org.ruhuna.blogapp.mapper.CommentMapper;
 import org.ruhuna.blogapp.service.impl.ICommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,39 +49,39 @@ public class CommentService implements ICommentService {
        comment.setUser(user);
        commentRepository.save(comment);
 
-
-        return mapToDTO(comment);
-
+       return mapToDTO(comment);
     }
 
     @Override
     public CommentResponseDTO getCommentById(Long id) {
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
-        return CommentMapper.toDTO(comment);
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found "+ id ));
+        return mapToDTO(comment);
     }
 
     @Override
     public Comment updateComment(Long id, CreateCommentDTO createCommentDTO) {
         Comment existingComment = commentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found " + id));
 
         existingComment.setContent(createCommentDTO.getContent());
 
         // Retrieve the Blog and User by ID from DTO
         Blog blog = blogRepository.findById(createCommentDTO.getBlogId())
-                .orElseThrow(() -> new RuntimeException("Blog not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Blog not found " + createCommentDTO.getBlogId()));
         existingComment.setBlog(blog);
 
         User user = userRepository.findById(createCommentDTO.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found "+ createCommentDTO.getUserId()));
         existingComment.setUser(user);
-
         return commentRepository.save(existingComment);
     }
 
     @Override
     public void deleteComment(Long id) {
+        if (!commentRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Comment not found " + id);
+        }
         commentRepository.deleteById(id);
     }
 
