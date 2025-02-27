@@ -43,8 +43,10 @@ public class WebSecurityConfig {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
-    @Autowired
-    private JwtFilter jwtFilter;
+    @Bean
+    public JwtFilter authenticationJwtTokenFilter(){
+        return new JwtFilter();
+    };
 
     @Autowired
     private CustomBasicAuthenticationEntryPoint customBasicAuthenticationEntryPoint;
@@ -59,7 +61,7 @@ public class WebSecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/api/users/login").permitAll()
+                        .requestMatchers("/api/users/**").permitAll()
                         .requestMatchers("/api/users/signup").permitAll()
                         .requestMatchers("/api/users/logout").permitAll()
                         .requestMatchers("api/test/").permitAll()
@@ -77,8 +79,11 @@ public class WebSecurityConfig {
                                 "/swagger-ui.html"
                         ).permitAll()
                         .anyRequest().authenticated())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        http.authenticationProvider(authenticationProvider());
+
 
         //http.exceptionHandling(ehc -> ehc.accessDeniedHandler(customAccessDeniedHandler));
         http.exceptionHandling(ehc -> ehc.authenticationEntryPoint(customBasicAuthenticationEntryPoint));
