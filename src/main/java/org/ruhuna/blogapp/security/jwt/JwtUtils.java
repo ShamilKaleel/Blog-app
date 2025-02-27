@@ -28,10 +28,17 @@ public class JwtUtils {
     @Value("${spring.app.jwtCookieName}")
     private String jwtCookie;
 
+    // Added to allow environment-specific configuration
+    @Value("${spring.app.cookieSecure:false}")
+    private boolean cookieSecure;
+
     public String getJwtFromCookies(HttpServletRequest request) {
         Cookie cookie = WebUtils.getCookie(request, jwtCookie);
         if (cookie != null) {
+            log.debug("JWT cookie found: {}", cookie.getName());
             return cookie.getValue();
+        } else {
+            log.debug("No JWT cookie found with name: {}", jwtCookie);
         }
         return null;
     }
@@ -41,55 +48,81 @@ public class JwtUtils {
     }
 
     public String generateTokenFromUsername(String username) {
-        return Jwts.builder()
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
+
+        String token = Jwts.builder()
                 .setSubject(username)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
                 .signWith(key(), SignatureAlgorithm.HS512)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(new Date().getTime() + jwtExpirationMs))
                 .compact();
+
+        log.debug("Generated JWT token for user: {} (expires: {})", username, expiryDate);
+        return token;
     }
 
     public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal) {
         String jwt = generateTokenFromUsername(userPrincipal.getUsername());
+
         ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt)
-                .path("/api")
-                .maxAge(24 * 60 * 60)
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("Strict")
+                .path("/")                   // Changed from "/api" to "/" to be available across the entire domain
+                .maxAge(24 * 60 * 60)        // 24 hours in seconds
+                .httpOnly(true)              // Prevents JavaScript access
+                .secure(cookieSecure)        // Configurable based on environment
+                .sameSite("Lax")             // Changed from "Strict" to "Lax" for better compatibility
                 .build();
+
+        log.info("Generated JWT cookie for user: {}", userPrincipal.getUsername());
         return cookie;
     }
 
     public ResponseCookie getCleanJwtCookie() {
         ResponseCookie cookie = ResponseCookie.from(jwtCookie, "")
-                .path("/api")
-                .maxAge(0)
+                .path("/")                   // Match the path in generateJwtCookie
+                .maxAge(0)                   // Expire immediately
                 .httpOnly(true)
-                .secure(true)
-                .sameSite("Strict")
+                .secure(cookieSecure)        // Configurable based on environment
+                .sameSite("Lax")             // Match the setting in generateJwtCookie
                 .build();
+
+        log.debug("Generated clean JWT cookie for logout");
         return cookie;
     }
 
     public String getUserNameFromJwtToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key())
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        try {
+            String username = Jwts.parserBuilder()
+                    .setSigningKey(key())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+
+            log.debug("Extracted username from JWT: {}", username);
+            return username;
+        } catch (Exception e) {
+            log.error("Could not extract username from token: {}", e.getMessage());
+            return null;
+        }
     }
 
     public boolean validateJwtToken(String authToken) {
+        if (authToken == null) {
+            log.error("JWT token is null");
+            return false;
+        }
+
         try {
             Jwts.parserBuilder()
                     .setSigningKey(key())
                     .build()
                     .parseClaimsJws(authToken);
+
+            log.debug("JWT token validated successfully");
             return true;
         } catch (MalformedJwtException e) {
-            log.error("Invalid JWT token: {}", e.getMessage());
+            log.error("Invalid JWT token format: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
             log.error("JWT token is expired: {}", e.getMessage());
         } catch (UnsupportedJwtException e) {
