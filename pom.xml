@@ -109,14 +109,23 @@
             <version>2.8.4</version>
         </dependency>
 
+        <!-- ModelMapper -->
+        <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
 
     </dependencies>
 
     <build>
+        <finalName>blog-king</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
                 <configuration>
                     <annotationProcessorPaths>
                         <path>

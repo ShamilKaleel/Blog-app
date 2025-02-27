@@ -1,5 +1,6 @@
 package org.ruhuna.blogapp.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.ruhuna.blogapp.model.AppRole;
 import org.ruhuna.blogapp.model.Role;
@@ -140,6 +141,7 @@ public class UserController {
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
+
         UserInfoResponse response = new UserInfoResponse(userDetails.getId(),
                 userDetails.getUsername(), roles);
 

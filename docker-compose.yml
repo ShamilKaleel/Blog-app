@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  backend:
+    env_file:
+      - .env
+    image: shamilkaleel/blog-app-backend:latest
+    container_name: myapp-backend
+    ports:
+      - "${SERVER_PORT:-8081}:8081"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - myapp-network
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.0
+    container_name: myapp-mysql
+    ports:
+      - "${MYSQL_PORT:-3307}:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=dental
+      - MYSQL_USER=${SPRING_DATASOURCE_USERNAME}
+      - MYSQL_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - myapp-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      retries: 3
+      start_period: 10s
+      timeout: 10s
+
+networks:
+  myapp-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    name: myapp-mysql-data

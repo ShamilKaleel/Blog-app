@@ -6,10 +6,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/api/test")
 public class TestController {
 
     @GetMapping("/")
-    public String hello(HttpServletRequest request) {
-        return "Hello World! from " + request.getSession(true).getId();
+    public String hello() {
+        return "Hello World! from" ;
     }
 }
