@@ -29,7 +29,7 @@ public class JwtUtils {
     private String jwtCookie;
 
     // Added to allow environment-specific configuration
-    @Value("${spring.app.cookieSecure:false}")
+    @Value("${spring.app.cookieSecure}")
     private boolean cookieSecure;
 
     public String getJwtFromCookies(HttpServletRequest request) {

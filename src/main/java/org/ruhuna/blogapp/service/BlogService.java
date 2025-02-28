@@ -56,7 +56,10 @@ public class BlogService implements IBlogService {
         Optional<User> userOpt= userRepository.findById(createBlogDTO.getUserID());
         User user = userOpt.orElseThrow(() ->
                 new UsernameNotFoundException("User not found" ));
-        Blog blog= modelMapper.map(createBlogDTO, Blog.class);
+        Blog blog= new Blog();
+        blog.setTitle(createBlogDTO.getTitle());
+        blog.setContent(createBlogDTO.getContent());
+
         blog.setUser(user);
         blogRepository.save(blog);
 
