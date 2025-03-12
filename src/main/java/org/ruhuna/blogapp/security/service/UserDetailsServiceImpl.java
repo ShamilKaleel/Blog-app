@@ -1,13 +1,19 @@
 package org.ruhuna.blogapp.security.service;
 
 import org.ruhuna.blogapp.model.User;
+import org.ruhuna.blogapp.payload.UserResponseDTO;
 import org.ruhuna.blogapp.repository.UserRepository;
+import org.ruhuna.blogapp.security.response.UserInfoResponse;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;

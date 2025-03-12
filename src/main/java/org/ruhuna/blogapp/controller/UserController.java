@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import org.ruhuna.blogapp.model.AppRole;
 import org.ruhuna.blogapp.model.Role;
 import org.ruhuna.blogapp.model.User;
+import org.ruhuna.blogapp.payload.UserResponseDTO;
 import org.ruhuna.blogapp.repository.RoleRepository;
 import org.ruhuna.blogapp.repository.UserRepository;
 import org.ruhuna.blogapp.security.jwt.JwtUtils;
@@ -149,9 +150,19 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<?> getAllUsers() {
+    public ResponseEntity< List<UserResponseDTO>> getAllUsers() {
         List<User> users = userRepository.findAll();
-        return ResponseEntity.ok().body(users);
+
+       List<UserResponseDTO> dto= users.stream().map(user -> UserResponseDTO.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .roles(user.getRoles().stream()
+                        .map(role -> role.getRoleName().name()) // Extracts enum name (e.g., "ROLE_ADMIN")
+                        .collect(Collectors.toList()))
+                .build()
+        ).collect(Collectors.toList());
+        return ResponseEntity.ok().body(dto);
     }
 
 }

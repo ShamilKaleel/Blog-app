@@ -33,6 +33,10 @@ public class Blog {
 
     @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL)
     private List<Comment> comments;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Category category;
 }
 
 

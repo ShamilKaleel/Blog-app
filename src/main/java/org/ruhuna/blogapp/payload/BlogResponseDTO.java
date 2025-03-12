@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.ruhuna.blogapp.model.Category;
 
 @Data
 @AllArgsConstructor
@@ -15,5 +16,6 @@ public class BlogResponseDTO {
     private String content;
     private String authorName;
     private String authorEmail;
+    private Category category;
 }
 

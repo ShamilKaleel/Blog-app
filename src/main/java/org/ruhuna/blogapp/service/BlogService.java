@@ -3,10 +3,11 @@ package org.ruhuna.blogapp.service;
 import org.modelmapper.ModelMapper;
 import org.ruhuna.blogapp.exceptions.ResourceNotFoundException;
 import org.ruhuna.blogapp.model.Blog;
-import org.ruhuna.blogapp.model.Comment;
+
+import org.ruhuna.blogapp.model.Category;
 import org.ruhuna.blogapp.model.User;
 import org.ruhuna.blogapp.payload.BlogResponseDTO;
-import org.ruhuna.blogapp.payload.CommentResponseDTO;
+
 import org.ruhuna.blogapp.payload.CreateBlogDTO;
 import org.ruhuna.blogapp.repository.BlogRepository;
 import org.ruhuna.blogapp.repository.UserRepository;
@@ -25,12 +26,6 @@ public class BlogService implements IBlogService {
 
     @Autowired
     private  BlogRepository blogRepository;
-
-    @Autowired
-    private  ModelMapper modelMapper;
-
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
 
     @Autowired
     private UserRepository userRepository;
@@ -56,11 +51,21 @@ public class BlogService implements IBlogService {
         Optional<User> userOpt= userRepository.findById(createBlogDTO.getUserID());
         User user = userOpt.orElseThrow(() ->
                 new UsernameNotFoundException("User not found" ));
+
+        Category category;
+        try {
+             category= Category.valueOf(createBlogDTO.getCategory());
+
+        }catch (Exception e){
+            throw new ResourceNotFoundException("Category not found");
+        }
+
         Blog blog= new Blog();
         blog.setTitle(createBlogDTO.getTitle());
         blog.setContent(createBlogDTO.getContent());
-
         blog.setUser(user);
+        blog.setCategory(category);
+
         blogRepository.save(blog);
 
         return convertToDTO(blog);
@@ -84,11 +89,14 @@ public class BlogService implements IBlogService {
     }
 
     public BlogResponseDTO convertToDTO(Blog blog) {
-        BlogResponseDTO dto= modelMapper.map(blog, BlogResponseDTO.class);
-        dto.setAuthorName(blog.getUser().getUsername());
-        dto.setAuthorEmail(blog.getUser().getEmail());
-
-        return dto;
+        return  BlogResponseDTO.builder()
+                .id(blog.getId())
+                .title(blog.getTitle())
+                .content(blog.getContent())
+                .authorName(blog.getUser().getUsername())
+                .authorEmail(blog.getUser().getEmail())
+                .category(blog.getCategory())
+                .build();
     }
 
 
