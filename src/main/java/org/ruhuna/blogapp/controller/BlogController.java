@@ -55,4 +55,9 @@ public class BlogController {
     public List<Category> getCategories() {
         return Arrays.asList(Category.values()); // Returns all enum values as a list
     }
+
+    @GetMapping("/category/{category}")
+    public List<BlogResponseDTO> getBlogsByCategory(@PathVariable String category) {
+        return blogService.getBlogsByCategory(category);
+    }
 }
