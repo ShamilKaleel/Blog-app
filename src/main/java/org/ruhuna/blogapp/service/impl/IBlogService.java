@@ -1,6 +1,7 @@
 package org.ruhuna.blogapp.service.impl;
 
 import org.ruhuna.blogapp.model.Blog;
+import org.ruhuna.blogapp.model.Category;
 import org.ruhuna.blogapp.payload.BlogResponseDTO;
 import org.ruhuna.blogapp.payload.CreateBlogDTO;
 
@@ -12,4 +13,5 @@ public interface IBlogService {
     public BlogResponseDTO createBlog(CreateBlogDTO createBlogDTO);
     public BlogResponseDTO updateBlog(Long id, CreateBlogDTO createBlogDTO);
     public void deleteBlog(Long id);
+    List<BlogResponseDTO> getBlogsByCategory(Category category);
 }

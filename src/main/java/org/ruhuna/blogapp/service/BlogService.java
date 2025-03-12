@@ -88,6 +88,18 @@ public class BlogService implements IBlogService {
 
     }
 
+    @Override
+    public List<BlogResponseDTO> getBlogsByCategory(Category category) {
+       List<BlogResponseDTO> blogs= blogRepository.findByCategory(category)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+        if (blogs.isEmpty()){
+            throw new ResourceNotFoundException("No Blogs Found");
+        }
+        return blogs;
+    }
+
     public BlogResponseDTO convertToDTO(Blog blog) {
         return  BlogResponseDTO.builder()
                 .id(blog.getId())
