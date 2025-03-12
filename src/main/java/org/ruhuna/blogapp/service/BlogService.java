@@ -89,8 +89,17 @@ public class BlogService implements IBlogService {
     }
 
     @Override
-    public List<BlogResponseDTO> getBlogsByCategory(Category category) {
-       List<BlogResponseDTO> blogs= blogRepository.findByCategory(category)
+    public List<BlogResponseDTO> getBlogsByCategory(String category) {
+        Category categoryObj;
+
+        System.out.printf(category);
+        try {
+            categoryObj= Category.valueOf(category.toUpperCase());
+        }catch (Exception e){
+            throw new ResourceNotFoundException(category+" is not a valid category");
+        }
+
+       List<BlogResponseDTO> blogs= blogRepository.findByCategory(categoryObj)
                 .stream()
                 .map(this::convertToDTO)
                 .toList();

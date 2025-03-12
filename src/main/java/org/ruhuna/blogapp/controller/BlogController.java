@@ -57,7 +57,7 @@ public class BlogController {
     }
 
     @GetMapping("/category/{category}")
-    public List<BlogResponseDTO> getBlogsByCategory(@PathVariable Category category) {
+    public List<BlogResponseDTO> getBlogsByCategory(@PathVariable String category) {
         return blogService.getBlogsByCategory(category);
     }
 }
