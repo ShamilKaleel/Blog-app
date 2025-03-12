@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.ruhuna.blogapp.model.Category;
 
 @Data
 @AllArgsConstructor
@@ -20,5 +21,9 @@ public class CreateBlogDTO {
     @NotBlank(message = "Content cannot be blank")
     private String content;
 
+
     private Long userID;
+
+    @NotBlank(message = "Category cannot be blank")
+    private String category;
 }

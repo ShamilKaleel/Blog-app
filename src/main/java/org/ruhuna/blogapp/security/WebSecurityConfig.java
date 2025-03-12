@@ -20,6 +20,8 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,8 +45,10 @@ public class WebSecurityConfig {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
-    @Autowired
-    private JwtFilter jwtFilter;
+    @Bean
+    public JwtFilter authenticationJwtTokenFilter(){
+        return new JwtFilter();
+    };
 
     @Autowired
     private CustomBasicAuthenticationEntryPoint customBasicAuthenticationEntryPoint;
@@ -57,12 +61,13 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/api/users/login").permitAll()
                         .requestMatchers("/api/users/signup").permitAll()
                         .requestMatchers("/api/users/logout").permitAll()
                         .requestMatchers("api/test/").permitAll()
+                        .requestMatchers("/api/users/users").hasAnyRole("ADMIN")
                         .requestMatchers(
                                 "/api/v1/auth/**",
                                 "/v2/api-docs",
@@ -77,13 +82,16 @@ public class WebSecurityConfig {
                                 "/swagger-ui.html"
                         ).permitAll()
                         .anyRequest().authenticated())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        http.authenticationProvider(authenticationProvider());
+
 
         //http.exceptionHandling(ehc -> ehc.accessDeniedHandler(customAccessDeniedHandler));
         http.exceptionHandling(ehc -> ehc.authenticationEntryPoint(customBasicAuthenticationEntryPoint));
         http.headers(headers -> headers.frameOptions(
-                frameOptions -> frameOptions.sameOrigin()));
+                HeadersConfigurer.FrameOptionsConfig::sameOrigin));
         return http.build();
     }
 

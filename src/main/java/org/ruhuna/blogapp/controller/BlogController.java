@@ -2,6 +2,7 @@ package org.ruhuna.blogapp.controller;
 
 import jakarta.validation.Valid;
 import org.ruhuna.blogapp.model.Blog;
+import org.ruhuna.blogapp.model.Category;
 import org.ruhuna.blogapp.payload.BlogResponseDTO;
 import org.ruhuna.blogapp.payload.CreateBlogDTO;
 import org.ruhuna.blogapp.service.impl.IBlogService;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -47,5 +49,10 @@ public class BlogController {
     public ResponseEntity<Void> deleteBlog(@PathVariable Long id) {
         blogService.deleteBlog(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/categories")
+    public List<Category> getCategories() {
+        return Arrays.asList(Category.values()); // Returns all enum values as a list
     }
 }
