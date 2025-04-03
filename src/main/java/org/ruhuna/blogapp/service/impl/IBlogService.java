@@ -14,4 +14,7 @@ public interface IBlogService {
     public BlogResponseDTO updateBlog(Long id, CreateBlogDTO createBlogDTO);
     public void deleteBlog(Long id);
     List<BlogResponseDTO> getBlogsByCategory(String category);
+    List<BlogResponseDTO> getBlogsByUserId(Long userId);
+
+
 }

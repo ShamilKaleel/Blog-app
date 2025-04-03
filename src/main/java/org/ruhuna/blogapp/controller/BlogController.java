@@ -57,7 +57,16 @@ public class BlogController {
     }
 
     @GetMapping("/category/{category}")
-    public List<BlogResponseDTO> getBlogsByCategory(@PathVariable String category) {
-        return blogService.getBlogsByCategory(category);
+    public ResponseEntity<List<BlogResponseDTO>> getBlogsByCategory(@PathVariable String category) {
+        List<BlogResponseDTO> blogs =blogService.getBlogsByCategory(category);
+        return new ResponseEntity<>(blogs, HttpStatus.OK);
     }
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<List<BlogResponseDTO>> getBlogsByUserId(@PathVariable Long id) {
+        List<BlogResponseDTO> blogs =blogService.getBlogsByUserId(id);
+        return new ResponseEntity<>(blogs, HttpStatus.OK);
+
+    }
+
 }
