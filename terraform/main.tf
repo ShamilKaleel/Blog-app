@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_security_group" "web_app_sg" {
-  name        = "web-app-security-group1"
+  name        = "web-app-security-group"
   description = "Security group for web application"
 
   # SSH access
@@ -71,19 +71,19 @@ resource "aws_security_group" "web_app_sg" {
   }
 
   tags = {
-    Name = "WebAppSecurityGroup1"
+    Name = "WebAppSecurityGroup"
   }
 }
 
 resource "aws_instance" "web_app" {
   ami           = "ami-03f4878755434977f"  # Ubuntu 22.04 in ap-south-1
   instance_type = "t3.medium"
-  key_name      = "ec2-connect"  # Your existing key
+  key_name      = "blog-app"  # Your existing key
 
   vpc_security_group_ids = [aws_security_group.web_app_sg.id]
 
   root_block_device {
-    volume_size = 30
+    volume_size = 20
     volume_type = "gp3"
   }
 
