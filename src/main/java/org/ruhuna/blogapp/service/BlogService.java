@@ -108,6 +108,22 @@ public class BlogService implements IBlogService {
         }
         return blogs;
     }
+    @Override
+    public List<BlogResponseDTO> getBlogsByUserId(Long userId) {
+        Optional<User> userOpt = userRepository.findById(userId);
+        User user = userOpt.orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        List<Blog> userBlogs = blogRepository.findByUser(user);
+
+        if (userBlogs.isEmpty()) {
+            throw new ResourceNotFoundException("No blogs found for user with ID: " + userId);
+
+        }
+
+        return userBlogs.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 
     public BlogResponseDTO convertToDTO(Blog blog) {
         return  BlogResponseDTO.builder()
