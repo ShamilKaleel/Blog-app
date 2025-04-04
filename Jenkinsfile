@@ -19,7 +19,6 @@ pipeline {
         MYSQL_ROOT_PASSWORD = credentials('mysql-root-password')
         DOCKER_CREDENTIALS = credentials('docker-hub-credentials')
         DOCKER_IMAGE = "shamilkaleel/blog-app-backend"
-//         EC2_HOST = credentials('ec2-host')
         EC2_USER = 'ubuntu'
         DEPLOY_ENV = "${params.DEPLOY_ENV ?: 'staging'}"
         SERVER_PORT = "${params.SERVER_PORT}"
@@ -113,7 +112,7 @@ EOL
             }
         }
 
-        stage('Provision Infrastructure') {
+        stage('Create EC2 with Terraform') {
             when {
                 expression { params.PROVISION_INFRASTRUCTURE == true }
             }
@@ -154,7 +153,7 @@ EOL
             }
         }
 
-        stage('Configure Infrastructure with Ansible') {
+        stage('Configure EC2 with Ansible') {
             when {
                 expression { params.PROVISION_INFRASTRUCTURE == true }
             }
